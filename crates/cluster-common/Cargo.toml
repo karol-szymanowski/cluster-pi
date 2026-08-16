@@ -1,0 +1,37 @@
+[package]
+name = "cluster-common"
+version = "0.1.0"
+edition = "2021"
+authors = ["Pi Cluster Core Authors"]
+description = "Shared CRDs, safety-guard, audit log, device model, and election gate for pi-cluster-core"
+
+[dependencies]
+# Kubernetes & CRD
+kube = { workspace = true }
+k8s-openapi = { workspace = true }
+schemars = { workspace = true }
+
+# Async & Runtime
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+futures = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+
+# Concurrency & Types
+chrono = { workspace = true }
+uuid = { workspace = true }
+
+# Error & Logging
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+
+# System
+nix = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

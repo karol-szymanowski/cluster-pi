@@ -1,0 +1,43 @@
+[package]
+name = "cluster-operator"
+version = "0.1.0"
+edition = "2021"
+authors = ["Pi Cluster Core Authors"]
+description = "Kubernetes controller for Pi Cluster quorum auto-healing, promotion FSM, and seed eviction"
+
+[dependencies]
+cluster-common = { workspace = true }
+
+# Kubernetes & CRD
+kube = { workspace = true }
+k8s-openapi = { workspace = true }
+schemars = { workspace = true }
+
+# Async & Runtime
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+futures = { workspace = true }
+async-trait = { workspace = true }
+
+# gRPC & Tonic (for GfsAdminClient & LDM IPC)
+tonic = { workspace = true }
+prost = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# CLI & Logging
+clap = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Errors & Types
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+parking_lot = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

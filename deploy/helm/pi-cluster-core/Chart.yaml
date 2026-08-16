@@ -1,0 +1,8 @@
+apiVersion: v2
+name: pi-cluster-core
+description: Autonomous bare-metal K3s platform and netboot engine for Raspberry Pi ARM64
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: Pi Cluster Core Authors

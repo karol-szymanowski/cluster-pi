@@ -1,0 +1,41 @@
+{{- if .Values.operator.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "pi-cluster-core.fullname" . }}-operator
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "pi-cluster-core.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "pi-cluster-core.fullname" . }}-operator-role
+  labels:
+    {{- include "pi-cluster-core.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["cluster.pi.io"]
+    resources: ["pinodes", "pinodes/status", "clustertopologies", "clustertopologies/status"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["nodes", "events", "secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "pi-cluster-core.fullname" . }}-operator-binding
+  labels:
+    {{- include "pi-cluster-core.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "pi-cluster-core.fullname" . }}-operator-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "pi-cluster-core.fullname" . }}-operator
+    namespace: {{ .Values.global.namespace }}
+{{- end }}

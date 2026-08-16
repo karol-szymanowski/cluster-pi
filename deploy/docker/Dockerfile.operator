@@ -1,0 +1,16 @@
+FROM rust:1.85-alpine AS builder
+
+RUN apk add --no-cache musl-dev protobuf-dev
+
+WORKDIR /app
+COPY . .
+
+RUN cargo build --release --bin cluster-operator
+
+FROM alpine:3.20
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /app/target/release/cluster-operator /usr/local/bin/cluster-operator
+
+ENTRYPOINT ["/usr/local/bin/cluster-operator"]

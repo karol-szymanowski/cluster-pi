@@ -1,0 +1,51 @@
+# Default values for pi-cluster-core Helm chart.
+
+global:
+  clusterVip: "192.168.1.200"
+  namespace: "kube-system"
+
+kubeVip:
+  enabled: true
+  image:
+    repository: ghcr.io/kube-vip/kube-vip
+    tag: v0.8.2
+    pullPolicy: IfNotPresent
+  interface: "eth0"
+  cidr: "32"
+  leaseName: "plndr-cp-lock"
+
+netboot:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: cluster-netboot
+    tag: latest
+    pullPolicy: IfNotPresent
+  dhcpPort: 67
+  tftpPort: 69
+  httpPort: 8080
+  leaseName: "cluster-netboot-dhcp"
+  gfsAssetPath: "/mnt/gfs/netboot-assets"
+  k3sTokenSecret: "k3s-cluster-secret"
+
+operator:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: cluster-operator
+    tag: latest
+    pullPolicy: IfNotPresent
+  leaseName: "cluster-operator-leader"
+  gfsMasterEndpoint: "http://gfs-master.default.svc.cluster.local:9000"
+  etcdEndpoint: "https://127.0.0.1:2379"
+  reconcileIntervalSecs: 5
+
+gfsIntegration:
+  enabled: true
+  master:
+    image: ghcr.io/karol-szymanowski/gfs-master:v0.1.0@sha256:7f4c5e3d2a1b0c9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e
+    replicas: 1
+    port: 9000
+  chunkserver:
+    image: ghcr.io/karol-szymanowski/gfs-chunkserver:v0.1.0@sha256:1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+    storagePath: "/mnt/gfs-storage"

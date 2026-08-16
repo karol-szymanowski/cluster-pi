@@ -1,0 +1,67 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: clustertopologies.cluster.pi.io
+spec:
+  group: cluster.pi.io
+  names:
+    kind: ClusterTopology
+    listKind: ClusterTopologyList
+    plural: clustertopologies
+    singular: clustertopology
+    shortNames:
+      - ctopo
+  scope: Cluster
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - seed_node
+              properties:
+                seed_node:
+                  type: string
+                target_master_count:
+                  type: integer
+                  minimum: 1
+                target_gfs_replication:
+                  type: integer
+                  minimum: 1
+                cluster_vip:
+                  type: string
+            status:
+              type: object
+              properties:
+                current_master_count:
+                  type: integer
+                current_worker_count:
+                  type: integer
+                quorum_healthy:
+                  type: boolean
+                seed_retired:
+                  type: boolean
+                active_mutation:
+                  type: string
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      status:
+                        type: string
+                      last_transition_time:
+                        type: string
+                      reason:
+                        type: string
+                      message:
+                        type: string
+      subresources:
+        status: {}

@@ -1,0 +1,59 @@
+{{- if .Values.gfsIntegration.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pi-cluster-core.fullname" . }}-gfs-master
+  namespace: default
+  labels:
+    app: gfs-master
+    {{- include "pi-cluster-core.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.gfsIntegration.master.replicas }}
+  selector:
+    matchLabels:
+      app: gfs-master
+  template:
+    metadata:
+      labels:
+        app: gfs-master
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: "true"
+      containers:
+        - name: gfs-master
+          image: {{ .Values.gfsIntegration.master.image | quote }}
+          ports:
+            - containerPort: {{ .Values.gfsIntegration.master.port }}
+              name: grpc
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "pi-cluster-core.fullname" . }}-gfs-chunkserver
+  namespace: default
+  labels:
+    app: gfs-chunkserver
+    {{- include "pi-cluster-core.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: gfs-chunkserver
+  template:
+    metadata:
+      labels:
+        app: gfs-chunkserver
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: "true"
+      containers:
+        - name: gfs-chunkserver
+          image: {{ .Values.gfsIntegration.chunkserver.image | quote }}
+          volumeMounts:
+            - name: gfs-storage
+              mountPath: {{ .Values.gfsIntegration.chunkserver.storagePath | quote }}
+      volumes:
+        - name: gfs-storage
+          hostPath:
+            path: {{ .Values.gfsIntegration.chunkserver.storagePath | quote }}
+            type: Directory
+{{- end }}

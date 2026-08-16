@@ -1,0 +1,89 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: pinodes.cluster.pi.io
+spec:
+  group: cluster.pi.io
+  names:
+    kind: PiNode
+    listKind: PiNodeList
+    plural: pinodes
+    singular: pinode
+    shortNames:
+      - pinode
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      additionalPrinterColumns:
+        - name: Role
+          type: string
+          jsonPath: .spec.desired_role
+        - name: Phase
+          type: string
+          jsonPath: .status.phase
+        - name: Disk
+          type: string
+          jsonPath: .status.disk_state
+        - name: Hardware Serial
+          type: string
+          jsonPath: .spec.hardware_serial
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              required:
+                - hardware_serial
+                - mac_address
+                - desired_role
+              properties:
+                hardware_serial:
+                  type: string
+                mac_address:
+                  type: string
+                desired_role:
+                  type: string
+                  enum: [Seed, Master, Worker, Pending, Decommissioned]
+                target_disk_id:
+                  type: string
+                reformat_confirmed:
+                  type: boolean
+                ip_address:
+                  type: string
+                hostname:
+                  type: string
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                disk_state:
+                  type: string
+                last_heartbeat:
+                  type: string
+                active_mount:
+                  type: string
+                filesystem_uuid:
+                  type: string
+                promotion:
+                  type: object
+                  properties:
+                    candidate_node:
+                      type: string
+                    current_step:
+                      type: string
+                    started_at:
+                      type: string
+                    updated_at:
+                      type: string
+                    drain_handle:
+                      type: string
+                    failure_reason:
+                      type: string
+                    attempt_count:
+                      type: integer
+      subresources:
+        status: {}

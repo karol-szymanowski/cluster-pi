@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package cluster.ldm.v1;
+
+service LocalDiskManager {
+    // Dynamically assign or reassign a node's disk role (e.g. during promotion/demotion)
+    rpc AssignRole(AssignRoleRequest) returns (ProvisionResult);
+
+    // Queries current disk state, filesystem UUID, and active mount point
+    rpc GetDiskState(GetDiskStateRequest) returns (DiskStateReport);
+
+    // Phase 1 of evacuation: ensures all writes are flushed and initiates unmount
+    rpc PrepareEvacuation(PrepareEvacuationRequest) returns (PrepareEvacuationResponse);
+
+    // Phase 2 of evacuation: verifies the mount is cleanly released before reformat
+    rpc ConfirmUnmounted(ConfirmUnmountedRequest) returns (ConfirmUnmountedResponse);
+}
+
+enum NodeRoleProto {
+    ROLE_UNSPECIFIED = 0;
+    ROLE_SEED = 1;
+    ROLE_MASTER = 2;
+    ROLE_WORKER = 3;
+    ROLE_PENDING = 4;
+    ROLE_DECOMMISSIONED = 5;
+}
+
+message AssignRoleRequest {
+    NodeRoleProto desired_role = 1;
+    string target_disk_id = 2;
+    bool reformat_confirmed = 3;
+    bool dry_run = 4;
+}
+
+message ProvisionResult {
+    bool success = 1;
+    string message = 2;
+    string formatted_device = 3;
+    string filesystem_uuid = 4;
+    string mount_point = 5;
+}
+
+message GetDiskStateRequest {}
+
+message DiskStateReport {
+    string state = 1; // Unformatted, Formatting, MountedEtcd, MountedGfs, Error
+    string device_path = 2;
+    string filesystem_uuid = 3;
+    string mount_point = 4;
+    string error_message = 5;
+}
+
+message PrepareEvacuationRequest {
+    string mount_point = 1;
+}
+
+message PrepareEvacuationResponse {
+    bool ready = 1;
+    string message = 2;
+}
+
+message ConfirmUnmountedRequest {
+    string mount_point = 1;
+}
+
+message ConfirmUnmountedResponse {
+    bool is_unmounted = 1;
+    string message = 2;
+}

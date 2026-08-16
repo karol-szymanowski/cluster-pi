@@ -1,0 +1,18 @@
+FROM rust:1.85-alpine AS builder
+
+RUN apk add --no-cache musl-dev protobuf-dev
+
+WORKDIR /app
+COPY . .
+
+RUN cargo build --release --bin cluster-netboot
+
+FROM alpine:3.20
+
+RUN apk add --no-cache ca-certificates iptables iproute2
+
+COPY --from=builder /app/target/release/cluster-netboot /usr/local/bin/cluster-netboot
+
+EXPOSE 67/udp 69/udp 8080/tcp
+
+ENTRYPOINT ["/usr/local/bin/cluster-netboot"]

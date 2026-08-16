@@ -1,0 +1,14 @@
+[package]
+name = "chaos-tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cluster-common = { workspace = true }
+cluster-operator = { path = "../../crates/cluster-operator" }
+tokio = { workspace = true }
+tracing = { workspace = true }
+serde_json = { workspace = true }
+tempfile = { workspace = true }
+kube = { workspace = true }
+chrono = { workspace = true }
